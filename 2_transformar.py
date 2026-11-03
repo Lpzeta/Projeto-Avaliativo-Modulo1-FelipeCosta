@@ -258,15 +258,19 @@ def carregar_filha(tabela_raw, tabela_silver, colunas_raw, colunas_silver,
     print(f"{tabela_silver}: {total} linhas carregadas, {descartadas} descartadas")
 
 def main():
-    banco.executar(TRUNCATE_SILVER)
-    ids_viagem = carregar_viagem()
-    carregar_filha("raw_pagamento", "silver_pagamento", RAW_PAGAMENTO,
-                   SILVER_PAGAMENTO, transformar_pagamento, ids_viagem)
-    carregar_filha("raw_passagem", "silver_passagem", RAW_PASSAGEM,
-                   SILVER_PASSAGEM, transformar_passagem, ids_viagem)
-    carregar_filha("raw_trecho", "silver_trecho", RAW_TRECHO,
-                   SILVER_TRECHO, transformar_trecho, ids_viagem,
-                   indices_unicos=(0, 1))
+    try:
+        banco.executar(TRUNCATE_SILVER)
+        ids_viagem = carregar_viagem()
+        carregar_filha("raw_pagamento", "silver_pagamento", RAW_PAGAMENTO,
+                       SILVER_PAGAMENTO, transformar_pagamento, ids_viagem)
+        carregar_filha("raw_passagem", "silver_passagem", RAW_PASSAGEM,
+                       SILVER_PASSAGEM, transformar_passagem, ids_viagem)
+        carregar_filha("raw_trecho", "silver_trecho", RAW_TRECHO,
+                       SILVER_TRECHO, transformar_trecho, ids_viagem,
+                       indices_unicos=(0, 1))
+    except Exception as erro:
+        print(f"Erro na transformação: {erro}")
+        raise
 
 
 if __name__ == "__main__":
